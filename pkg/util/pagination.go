@@ -6,7 +6,7 @@ import (
 	"github.com/unknwon/com"
 )
 
-func GetPage(ctx *gin.Context) int {
+func GetOffset(ctx *gin.Context) int {
 	result := 0
 	page, _ := com.StrTo(ctx.Query("page")).Int()
 	if page > 0 {

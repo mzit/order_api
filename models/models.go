@@ -2,20 +2,22 @@ package models
 
 import (
 	"fmt"
+	"github.com/mzit/order_api/pkg/logging"
 	"github.com/mzit/order_api/pkg/setting"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
+	"time"
 )
 
 var db *gorm.DB
 
 type Model struct {
-	ID         int `gorm:"primary_key" json:"id"`
-	CreatedOn  int `json:"created_on"`
-	ModifiedOn int `json:"modified_on"`
+	ID        int       `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func init() {
@@ -34,14 +36,14 @@ func init() {
 	host = section.Key("HOST").String()
 	tablePrefix = section.Key("TABLE_PREFIX").String()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, dbName)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix: tablePrefix, //表前缀
 		},
-		Logger: logger.Default.LogMode(logger.Info),//手动开启debug，Gorm 有一个 默认 logger 实现，默认情况下，它会打印慢 SQL 和错误
+		Logger: logger.Default.LogMode(logger.Info), //手动开启debug，Gorm 有一个 默认 logger 实现，默认情况下，它会打印慢 SQL 和错误
 	})
 	if err != nil {
-		log.Println(err)
+		logging.Error(err)
 	}
 
 	sqlDB, err := db.DB()
